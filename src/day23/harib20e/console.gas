@@ -1,0 +1,1305 @@
+	.file	"console.c"
+	.text
+	.balign 2
+.globl _console_task
+	.def	_console_task;	.scl	2;	.type	32;	.endef
+_console_task:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	leal	-572(%ebp), %ebx
+	subl	$568, %esp
+	call	_task_now
+	pushl	$11520
+	pushl	_memman
+	movl	%eax, -576(%ebp)
+	call	_memman_alloc_4k
+	movl	$8, -568(%ebp)
+	movl	%eax, -580(%ebp)
+	movl	-576(%ebp), %esi
+	movl	8(%ebp), %eax
+	addl	$16, %esi
+	movl	$28, -564(%ebp)
+	movl	$-1, -560(%ebp)
+	movl	%eax, -572(%ebp)
+	movl	%ebx, 4076
+	leal	-524(%ebp), %eax
+	movl	%ebx, _console
+	pushl	-576(%ebp)
+	pushl	%eax
+	pushl	$128
+	pushl	%esi
+	call	_fifo32_init
+	call	_timer_alloc
+	pushl	$1
+	pushl	%esi
+	movl	%eax, %edi
+	pushl	%eax
+	call	_timer_init
+	addl	$36, %esp
+	pushl	$50
+	pushl	%edi
+	call	_timer_settime
+	pushl	$1049088
+	pushl	-580(%ebp)
+	call	_file_readfat
+	pushl	$1
+	pushl	$62
+	pushl	%ebx
+	call	_cons_putchar
+	addl	$28, %esp
+L24:
+	call	_io_cli
+	movl	-576(%ebp), %esi
+	addl	$16, %esi
+	pushl	%esi
+	call	_fifo32_status
+	popl	%edx
+	testl	%eax, %eax
+	je	L27
+	pushl	%esi
+	call	_fifo32_get
+	movl	%eax, %ebx
+	call	_io_sti
+	popl	%ecx
+	cmpl	$1, %ebx
+	jle	L28
+	cmpl	$2, %ebx
+	je	L29
+	cmpl	$3, %ebx
+	je	L30
+	leal	-256(%ebx), %edx
+	cmpl	$255, %edx
+	ja	L12
+	cmpl	$264, %ebx
+	je	L31
+	cmpl	$266, %ebx
+	je	L32
+	movl	-568(%ebp), %eax
+	pushl	$1
+	subl	$16, %eax
+	pushl	%edx
+	sarl	$3, %eax
+	movb	%bl, -556(%ebp,%eax)
+	leal	-572(%ebp), %eax
+	pushl	%eax
+L25:
+	call	_cons_putchar
+L26:
+	addl	$12, %esp
+L12:
+	cmpl	$0, -560(%ebp)
+	js	L23
+	movl	-564(%ebp), %ecx
+	movl	-568(%ebp), %edx
+	leal	15(%ecx), %eax
+	pushl	%eax
+	leal	7(%edx), %eax
+	pushl	%eax
+	pushl	%ecx
+	pushl	%edx
+	movzbl	-560(%ebp), %eax
+	pushl	%eax
+	movl	8(%ebp), %eax
+	pushl	4(%eax)
+	pushl	(%eax)
+	call	_boxfill8
+	addl	$28, %esp
+L23:
+	movl	-564(%ebp), %ecx
+	movl	-568(%ebp), %edx
+	leal	16(%ecx), %eax
+	pushl	%eax
+	leal	8(%edx), %eax
+	pushl	%eax
+	pushl	%ecx
+	pushl	%edx
+	pushl	8(%ebp)
+	call	_sheet_refresh
+	addl	$20, %esp
+	jmp	L24
+L32:
+	pushl	$0
+	leal	-572(%ebp), %ebx
+	pushl	$32
+	pushl	%ebx
+	call	_cons_putchar
+	pushl	%ebx
+	movl	-568(%ebp), %eax
+	subl	$16, %eax
+	sarl	$3, %eax
+	movb	$0, -556(%ebp,%eax)
+	call	_cons_newline
+	leal	-556(%ebp), %eax
+	pushl	12(%ebp)
+	pushl	-580(%ebp)
+	pushl	%ebx
+	pushl	%eax
+	call	_cons_runcmd
+	addl	$32, %esp
+	pushl	$1
+	pushl	$62
+	pushl	%ebx
+	jmp	L25
+L31:
+	cmpl	$16, -568(%ebp)
+	jle	L12
+	pushl	$0
+	leal	-572(%ebp), %eax
+	pushl	$32
+	pushl	%eax
+	call	_cons_putchar
+	subl	$8, -568(%ebp)
+	jmp	L26
+L30:
+	movl	-564(%ebp), %ecx
+	movl	-568(%ebp), %edx
+	movl	$-1, -560(%ebp)
+	leal	15(%ecx), %eax
+	pushl	%eax
+	leal	7(%edx), %eax
+	pushl	%eax
+	movl	8(%ebp), %eax
+	pushl	%ecx
+	pushl	%edx
+	pushl	$0
+	pushl	4(%eax)
+	pushl	(%eax)
+	call	_boxfill8
+	addl	$28, %esp
+	jmp	L12
+L29:
+	movl	$7, -560(%ebp)
+	jmp	L12
+L28:
+	testl	%ebx, %ebx
+	je	L8
+	pushl	$0
+	pushl	%esi
+	pushl	%edi
+	call	_timer_init
+	addl	$12, %esp
+	cmpl	$0, -560(%ebp)
+	js	L10
+	movl	$7, -560(%ebp)
+L10:
+	pushl	$50
+	pushl	%edi
+	call	_timer_settime
+	popl	%eax
+	popl	%edx
+	jmp	L12
+L8:
+	pushl	$1
+	pushl	%esi
+	pushl	%edi
+	call	_timer_init
+	addl	$12, %esp
+	cmpl	$0, -560(%ebp)
+	js	L10
+	movl	$0, -560(%ebp)
+	jmp	L10
+L27:
+	pushl	-576(%ebp)
+	call	_task_sleep
+	call	_io_sti
+	popl	%ebx
+	jmp	L24
+	.data
+LC0:
+	.ascii " \0"
+	.text
+	.balign 2
+.globl _cons_putchar
+	.def	_cons_putchar;	.scl	2;	.type	32;	.endef
+_cons_putchar:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%ebx
+	pushl	%eax
+	movl	12(%ebp), %eax
+	movb	16(%ebp), %dl
+	movl	8(%ebp), %ebx
+	movb	%dl, -7(%ebp)
+	movb	%al, -6(%ebp)
+	cmpb	$9, %al
+	movb	$0, -5(%ebp)
+	je	L35
+	cmpb	$10, %al
+	je	L47
+	cmpb	$13, %al
+	je	L33
+	pushl	$1
+	leal	-6(%ebp), %eax
+	pushl	%eax
+	pushl	$0
+	pushl	$7
+	pushl	8(%ebx)
+	pushl	4(%ebx)
+	pushl	(%ebx)
+	call	_putfonts8_asc_sht
+	addl	$28, %esp
+	cmpb	$0, -7(%ebp)
+	je	L33
+	movl	4(%ebx), %eax
+	addl	$8, %eax
+	movl	%eax, 4(%ebx)
+	cmpl	$248, %eax
+	je	L47
+L33:
+	movl	-4(%ebp), %ebx
+	leave
+	ret
+L47:
+	pushl	%ebx
+	call	_cons_newline
+	popl	%ecx
+	jmp	L33
+L35:
+	pushl	$1
+	pushl	$LC0
+	pushl	$0
+	pushl	$7
+	pushl	8(%ebx)
+	pushl	4(%ebx)
+	pushl	(%ebx)
+	call	_putfonts8_asc_sht
+	addl	$28, %esp
+	movl	4(%ebx), %eax
+	addl	$8, %eax
+	movl	%eax, 4(%ebx)
+	cmpl	$248, %eax
+	je	L48
+L37:
+	movl	4(%ebx), %eax
+	subl	$8, %eax
+	andl	$31, %eax
+	jne	L35
+	jmp	L33
+L48:
+	pushl	%ebx
+	call	_cons_newline
+	popl	%eax
+	jmp	L37
+	.balign 2
+.globl _cons_newline
+	.def	_cons_newline;	.scl	2;	.type	32;	.endef
+_cons_newline:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%eax
+	movl	8(%ebp), %eax
+	movl	8(%ebp), %edx
+	movl	(%eax), %eax
+	movl	%eax, -16(%ebp)
+	movl	8(%edx), %eax
+	cmpl	$139, %eax
+	jg	L50
+	addl	$16, %eax
+	movl	%eax, 8(%edx)
+L51:
+	movl	8(%ebp), %eax
+	movl	$8, 4(%eax)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L50:
+	movl	$28, %edi
+L61:
+	movl	$8, %esi
+L60:
+	movl	-16(%ebp), %eax
+	movl	%edi, %edx
+	movl	4(%eax), %ecx
+	movl	(%eax), %ebx
+	leal	16(%edi), %eax
+	imull	%ecx, %eax
+	imull	%ecx, %edx
+	leal	(%eax,%esi), %eax
+	leal	(%edx,%esi), %edx
+	incl	%esi
+	movb	(%eax,%ebx), %al
+	cmpl	$247, %esi
+	movb	%al, (%edx,%ebx)
+	jle	L60
+	incl	%edi
+	cmpl	$139, %edi
+	jle	L61
+	movl	$140, %edi
+L71:
+	movl	$8, %esi
+L70:
+	movl	-16(%ebp), %edx
+	movl	%edi, %eax
+	movl	%edx, %ecx
+	imull	4(%edx), %eax
+	movl	(%edx), %edx
+	leal	(%eax,%esi), %eax
+	incl	%esi
+	cmpl	$247, %esi
+	movb	$0, (%eax,%edx)
+	jle	L70
+	incl	%edi
+	cmpl	$155, %edi
+	jle	L71
+	pushl	$156
+	pushl	$248
+	pushl	$28
+	pushl	$8
+	pushl	%ecx
+	call	_sheet_refresh
+	addl	$20, %esp
+	jmp	L51
+	.data
+LC1:
+	.ascii "mem\0"
+LC2:
+	.ascii "cls\0"
+LC3:
+	.ascii "dir\0"
+LC4:
+	.ascii "type \0"
+LC5:
+	.ascii "Bad command.\12\12\0"
+	.text
+	.balign 2
+.globl _cons_runcmd
+	.def	_cons_runcmd;	.scl	2;	.type	32;	.endef
+_cons_runcmd:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	movl	$LC1, %edi
+	pushl	%ebx
+	subl	$12, %esp
+	movl	8(%ebp), %eax
+	movl	16(%ebp), %ecx
+	movl	%eax, -24(%ebp)
+	movl	%ecx, -16(%ebp)
+	movl	20(%ebp), %eax
+	movl	-24(%ebp), %esi
+	movl	%eax, -20(%ebp)
+	movl	12(%ebp), %ebx
+	movl	$4, %eax
+	cld
+	movl	%eax, %ecx
+	repe
+	cmpsb
+	je	L91
+	movl	$4, %eax
+	movl	-24(%ebp), %esi
+	cld
+	movl	$LC2, %edi
+	movl	%eax, %ecx
+	repe
+	cmpsb
+	je	L92
+	movl	$4, %eax
+	movl	-24(%ebp), %esi
+	cld
+	movl	$LC3, %edi
+	movl	%eax, %ecx
+	repe
+	cmpsb
+	je	L93
+	movl	$5, %eax
+	movl	-24(%ebp), %esi
+	cld
+	movl	$LC4, %edi
+	movl	%eax, %ecx
+	repe
+	cmpsb
+	je	L94
+	movl	-24(%ebp), %eax
+	cmpb	$0, (%eax)
+	jne	L95
+L80:
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L95:
+	pushl	%eax
+	pushl	-16(%ebp)
+	pushl	%ebx
+	call	_cmd_app
+	addl	$12, %esp
+	testl	%eax, %eax
+	jne	L80
+	movl	$LC5, 12(%ebp)
+	movl	%ebx, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cons_putstr0
+L94:
+	movl	-24(%ebp), %eax
+	movl	-16(%ebp), %ecx
+	movl	%eax, 16(%ebp)
+	movl	%ecx, 12(%ebp)
+	movl	%ebx, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cmd_type
+L93:
+	movl	%ebx, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cmd_dir
+L92:
+	movl	%ebx, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cmd_cls
+L91:
+	movl	-20(%ebp), %eax
+	movl	%ebx, 8(%ebp)
+	movl	%eax, 12(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cmd_mem
+	.data
+LC6:
+	.ascii "total %dMB\12free %dKB\12\12\0"
+	.text
+	.balign 2
+.globl _cmd_mem
+	.def	_cmd_mem;	.scl	2;	.type	32;	.endef
+_cmd_mem:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%ebx
+	subl	$64, %esp
+	pushl	_memman
+	movl	12(%ebp), %ebx
+	call	_memman_total
+	shrl	$10, %eax
+	shrl	$20, %ebx
+	movl	%eax, (%esp)
+	pushl	%ebx
+	leal	-68(%ebp), %ebx
+	pushl	$LC6
+	pushl	%ebx
+	call	_sprintf
+	pushl	%ebx
+	pushl	8(%ebp)
+	call	_cons_putstr0
+	movl	-4(%ebp), %ebx
+	leave
+	ret
+	.balign 2
+.globl _cmd_cls
+	.def	_cmd_cls;	.scl	2;	.type	32;	.endef
+_cmd_cls:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	movl	$28, %esi
+	movl	8(%ebp), %edi
+	pushl	%ebx
+	movl	(%edi), %ebx
+L107:
+	movl	$8, %ecx
+L106:
+	movl	%esi, %eax
+	movl	(%ebx), %edx
+	imull	4(%ebx), %eax
+	leal	(%eax,%ecx), %eax
+	incl	%ecx
+	cmpl	$247, %ecx
+	movb	$0, (%eax,%edx)
+	jle	L106
+	incl	%esi
+	cmpl	$139, %esi
+	jle	L107
+	pushl	$156
+	pushl	$248
+	pushl	$28
+	pushl	$8
+	pushl	%ebx
+	call	_sheet_refresh
+	movl	$28, 8(%edi)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.data
+LC7:
+	.ascii "%s.%s %7d\12\0"
+	.text
+	.balign 2
+.globl _cmd_dir
+	.def	_cmd_dir;	.scl	2;	.type	32;	.endef
+_cmd_dir:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	xorl	%edi, %edi
+	pushl	%ebx
+	xorl	%esi, %esi
+	subl	$48, %esp
+L120:
+	movb	1058304(%esi), %al
+	testb	%al, %al
+	je	L114
+	cmpb	$-27, %al
+	je	L115
+	testb	$24, 1058315(%esi)
+	je	L122
+L115:
+	incl	%edi
+	addl	$32, %esi
+	cmpl	$223, %edi
+	jle	L120
+L114:
+	pushl	8(%ebp)
+	call	_cons_newline
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L122:
+	pushl	$8
+	leal	1058304(%esi), %eax
+	pushl	%eax
+	leal	-60(%ebp), %ebx
+	pushl	%ebx
+	call	_strncpy
+	leal	1058312(%esi), %eax
+	movb	$0, -52(%ebp)
+	pushl	1058332(%esi)
+	pushl	%eax
+	pushl	%ebx
+	leal	-44(%ebp), %ebx
+	pushl	$LC7
+	pushl	%ebx
+	call	_sprintf
+	addl	$32, %esp
+	pushl	%ebx
+	pushl	8(%ebp)
+	call	_cons_putstr0
+	popl	%eax
+	popl	%edx
+	jmp	L115
+	.data
+LC8:
+	.ascii "File not found.\0"
+	.text
+	.balign 2
+.globl _cmd_type
+	.def	_cmd_type;	.scl	2;	.type	32;	.endef
+_cmd_type:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%edi
+	movl	12(%ebp), %eax
+	movl	8(%ebp), %edi
+	movl	%eax, -16(%ebp)
+	pushl	$224
+	pushl	$1058304
+	movl	16(%ebp), %eax
+	addl	$5, %eax
+	pushl	%eax
+	call	_file_search
+	addl	$12, %esp
+	movl	%eax, %esi
+	testl	%eax, %eax
+	je	L124
+	pushl	28(%eax)
+	pushl	_memman
+	call	_memman_alloc_4k
+	pushl	$1064448
+	pushl	-16(%ebp)
+	pushl	%eax
+	movl	%eax, %ebx
+	pushl	28(%esi)
+	movzwl	26(%esi), %eax
+	pushl	%eax
+	call	_file_loadfile
+	pushl	28(%esi)
+	pushl	%ebx
+	pushl	%edi
+	call	_cons_putstr1
+	addl	$40, %esp
+	pushl	28(%esi)
+	pushl	%ebx
+	pushl	_memman
+	call	_memman_free_4k
+	addl	$12, %esp
+L125:
+	pushl	%edi
+	call	_cons_newline
+	popl	%ecx
+	movl	%edi, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_cons_newline
+L124:
+	pushl	$LC8
+	pushl	%edi
+	call	_cons_putstr0
+	popl	%ebx
+	popl	%esi
+	jmp	L125
+	.data
+LC9:
+	.ascii "Hari\0"
+LC10:
+	.ascii ".hrb file format error.\12\0"
+	.text
+	.balign 2
+.globl _cmd_app
+	.def	_cmd_app;	.scl	2;	.type	32;	.endef
+_cmd_app:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	xorl	%ebx, %ebx
+	subl	$56, %esp
+	movl	16(%ebp), %esi
+	call	_task_now
+	movl	%eax, -52(%ebp)
+L132:
+	movb	(%ebx,%esi), %al
+	cmpb	$32, %al
+	jle	L128
+	movb	%al, -44(%ebp,%ebx)
+	incl	%ebx
+	cmpl	$12, %ebx
+	jle	L132
+L128:
+	pushl	$224
+	leal	-44(%ebp), %esi
+	pushl	$1058304
+	pushl	%esi
+	movb	$0, -44(%ebp,%ebx)
+	call	_file_search
+	addl	$12, %esp
+	testl	%eax, %eax
+	movl	%eax, -48(%ebp)
+	je	L146
+L145:
+	movl	-48(%ebp), %eax
+	pushl	28(%eax)
+	pushl	_memman
+	call	_memman_alloc_4k
+	movl	-48(%ebp), %edx
+	pushl	$1064448
+	pushl	12(%ebp)
+	pushl	%eax
+	movl	%eax, -68(%ebp)
+	pushl	28(%edx)
+	movzwl	26(%edx), %eax
+	pushl	%eax
+	call	_file_loadfile
+	movl	-48(%ebp), %edi
+	addl	$28, %esp
+	cmpl	$35, 28(%edi)
+	jbe	L135
+	movl	-68(%ebp), %esi
+	movl	$LC9, %eax
+	cld
+	addl	$4, %esi
+	movl	$4, %ecx
+	movl	%eax, %edi
+	repe
+	cmpsb
+	jne	L135
+	movl	-68(%ebp), %eax
+	cmpb	$0, (%eax)
+	je	L147
+L135:
+	pushl	$LC10
+	pushl	8(%ebp)
+	call	_cons_putstr0
+	popl	%eax
+	popl	%edx
+L141:
+	movl	-48(%ebp), %edi
+	pushl	28(%edi)
+	pushl	-68(%ebp)
+	pushl	_memman
+	call	_memman_free_4k
+	pushl	8(%ebp)
+	call	_cons_newline
+	movl	$1, %eax
+L126:
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L147:
+	movl	(%eax), %edx
+	movl	12(%eax), %edi
+	movl	16(%eax), %ebx
+	movl	%edx, -56(%ebp)
+	movl	20(%eax), %eax
+	movl	%edi, -60(%ebp)
+	pushl	%edx
+	movl	%eax, -64(%ebp)
+	pushl	_memman
+	call	_memman_alloc_4k
+	movl	-48(%ebp), %edx
+	movl	%eax, 4072
+	movl	%eax, %esi
+	pushl	$16634
+	pushl	-68(%ebp)
+	movl	28(%edx), %eax
+	decl	%eax
+	pushl	%eax
+	movl	_gdt, %eax
+	addl	$8024, %eax
+	pushl	%eax
+	call	_set_segmdesc
+	movl	-56(%ebp), %eax
+	pushl	$16626
+	decl	%eax
+	pushl	%esi
+	pushl	%eax
+	movl	_gdt, %eax
+	addl	$8032, %eax
+	pushl	%eax
+	call	_set_segmdesc
+	addl	$40, %esp
+	testl	%ebx, %ebx
+	jle	L144
+	movl	-64(%ebp), %edx
+	movl	%edi, %ecx
+	addl	-68(%ebp), %edx
+	addl	%esi, %ecx
+L140:
+	movb	(%edx), %al
+	incl	%edx
+	movb	%al, (%ecx)
+	incl	%ecx
+	decl	%ebx
+	jne	L140
+L144:
+	movl	-52(%ebp), %eax
+	addl	$48, %eax
+	pushl	%eax
+	pushl	$8032
+	pushl	-60(%ebp)
+	pushl	$8024
+	pushl	$27
+	call	_start_app
+	pushl	-56(%ebp)
+	pushl	%esi
+	pushl	_memman
+	call	_memman_free_4k
+	addl	$32, %esp
+	jmp	L141
+L146:
+	cmpb	$46, -45(%ebp,%ebx)
+	je	L133
+	pushl	$224
+	pushl	$1058304
+	pushl	%esi
+	movb	$0, -40(%ebx,%ebp)
+	movl	$1651664942, -44(%ebx,%ebp)
+	movb	$0, -40(%ebp,%ebx)
+	call	_file_search
+	addl	$12, %esp
+	movl	%eax, -48(%ebp)
+L133:
+	cmpl	$0, -48(%ebp)
+	jne	L145
+	xorl	%eax, %eax
+	jmp	L126
+	.balign 2
+.globl _cons_putstr0
+	.def	_cons_putstr0;	.scl	2;	.type	32;	.endef
+_cons_putstr0:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%esi
+	pushl	%ebx
+	movl	12(%ebp), %ebx
+	movl	8(%ebp), %esi
+	cmpb	$0, (%ebx)
+	jne	L153
+L155:
+	leal	-8(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%ebp
+	ret
+L153:
+	pushl	$1
+	movsbl	(%ebx),%eax
+	pushl	%eax
+	incl	%ebx
+	pushl	%esi
+	call	_cons_putchar
+	addl	$12, %esp
+	cmpb	$0, (%ebx)
+	jne	L153
+	jmp	L155
+	.balign 2
+.globl _cons_putstr1
+	.def	_cons_putstr1;	.scl	2;	.type	32;	.endef
+_cons_putstr1:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	movl	16(%ebp), %eax
+	pushl	%ebx
+	movl	8(%ebp), %edi
+	movl	12(%ebp), %esi
+	testl	%eax, %eax
+	jle	L163
+	movl	%eax, %ebx
+L161:
+	pushl	$1
+	movsbl	(%esi),%eax
+	pushl	%eax
+	incl	%esi
+	pushl	%edi
+	call	_cons_putchar
+	addl	$12, %esp
+	decl	%ebx
+	jne	L161
+L163:
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.balign 2
+.globl _hrb_api
+	.def	_hrb_api;	.scl	2;	.type	32;	.endef
+_hrb_api:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	movl	28(%ebp), %esi
+	movl	24(%ebp), %ebx
+	movl	4072, %edi
+	call	_task_now
+	cmpl	$1, %esi
+	movl	4068, %edx
+	je	L203
+	cmpl	$2, %esi
+	je	L204
+	cmpl	$3, %esi
+	je	L205
+	cmpl	$4, %esi
+	je	L206
+	cmpl	$5, %esi
+	je	L207
+	cmpl	$6, %esi
+	je	L208
+	cmpl	$7, %esi
+	je	L209
+	cmpl	$8, %esi
+	je	L210
+	cmpl	$9, %esi
+	je	L211
+	cmpl	$10, %esi
+	je	L212
+	cmpl	$11, %esi
+	je	L213
+	cmpl	$12, %esi
+	je	L214
+	cmpl	$13, %esi
+	je	L215
+	cmpl	$14, %esi
+	je	L216
+L166:
+	xorl	%eax, %eax
+L164:
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L216:
+	pushl	%ebx
+	call	_sheet_free
+	popl	%ecx
+	jmp	L166
+L215:
+	pushl	16(%ebp)
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	32(%ebp)
+	movl	%ebx, %esi
+	pushl	36(%ebp)
+	andl	$-2, %esi
+	pushl	%esi
+	call	_hrb_api_linewin
+	addl	$24, %esp
+L202:
+	andl	$1, %ebx
+	jne	L166
+	movl	8(%ebp), %eax
+	incl	%eax
+	pushl	%eax
+	movl	12(%ebp), %eax
+	incl	%eax
+	pushl	%eax
+	pushl	32(%ebp)
+	pushl	36(%ebp)
+L200:
+	pushl	%esi
+L196:
+	call	_sheet_refresh
+L197:
+	addl	$20, %esp
+	jmp	L166
+L214:
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	32(%ebp)
+	andl	$-2, %ebx
+	pushl	36(%ebp)
+	pushl	%ebx
+	jmp	L196
+L213:
+	movl	%ebx, %esi
+	movl	8(%ebp), %eax
+	andl	$-2, %esi
+	movb	36(%ebp), %dl
+	imull	4(%esi), %eax
+	addl	12(%ebp), %eax
+	movl	(%esi), %ecx
+	andl	$1, %ebx
+	movb	%dl, (%eax,%ecx)
+	jne	L166
+	movl	8(%ebp), %eax
+	incl	%eax
+	pushl	%eax
+	movl	12(%ebp), %eax
+	incl	%eax
+	pushl	%eax
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	jmp	L200
+L212:
+	movl	32(%ebp), %eax
+	addl	$15, %eax
+	andl	$-16, %eax
+	pushl	%eax
+	leal	(%edi,%ebx), %eax
+	pushl	36(%ebp)
+	pushl	%eax
+	call	_memman_free
+L198:
+	addl	$12, %esp
+	jmp	L166
+L211:
+	movl	32(%ebp), %eax
+	addl	$15, %eax
+	andl	$-16, %eax
+	pushl	%eax
+	leal	(%edi,%ebx), %eax
+	pushl	%eax
+	call	_memman_alloc
+	movl	%eax, 68(%ebp)
+L199:
+	popl	%ebx
+	popl	%esi
+	jmp	L166
+L210:
+	addl	%edi, %ebx
+	pushl	%ebx
+	call	_memman_init
+	andl	$-16, 32(%ebp)
+	pushl	32(%ebp)
+	pushl	36(%ebp)
+	pushl	%ebx
+	call	_memman_free
+	addl	$16, %esp
+	jmp	L166
+L209:
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	32(%ebp)
+	movl	%ebx, %esi
+	pushl	36(%ebp)
+	andl	$-2, %esi
+	movzbl	16(%ebp), %eax
+	pushl	%eax
+	pushl	4(%esi)
+	pushl	(%esi)
+	call	_boxfill8
+	addl	$28, %esp
+	jmp	L202
+L208:
+	movl	16(%ebp), %eax
+	movl	%ebx, %esi
+	addl	%edi, %eax
+	andl	$-2, %esi
+	pushl	%eax
+	movsbl	36(%ebp),%eax
+	pushl	%eax
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	4(%esi)
+	pushl	(%esi)
+	call	_putfonts8_asc
+	addl	$24, %esp
+	andl	$1, %ebx
+	jne	L166
+	movl	12(%ebp), %ecx
+	movl	8(%ebp), %eax
+	movl	32(%ebp), %edx
+	addl	$16, %eax
+	pushl	%eax
+	leal	(%ecx,%edx,8), %eax
+	pushl	%eax
+	pushl	8(%ebp)
+	pushl	%ecx
+	jmp	L200
+L207:
+	pushl	%edx
+	addl	%edi, %ebx
+	call	_sheet_alloc
+	pushl	36(%ebp)
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	%ebx
+	movl	%eax, %esi
+	pushl	%eax
+	call	_sheet_setbuf
+	movl	32(%ebp), %eax
+	pushl	$0
+	addl	%edi, %eax
+	pushl	%eax
+	pushl	8(%ebp)
+	pushl	12(%ebp)
+	pushl	%ebx
+	call	_make_window8
+	addl	$44, %esp
+	pushl	$200
+	pushl	$200
+	pushl	%esi
+	call	_sheet_slide
+	pushl	$3
+	pushl	%esi
+	call	_sheet_updown
+	movl	%esi, 68(%ebp)
+	jmp	L197
+L206:
+	addl	$48, %eax
+	jmp	L164
+L205:
+	pushl	32(%ebp)
+	leal	(%edi,%ebx), %eax
+	pushl	%eax
+	pushl	_console
+	call	_cons_putstr1
+	jmp	L198
+L204:
+	leal	(%edi,%ebx), %eax
+	pushl	%eax
+	pushl	_console
+	call	_cons_putstr0
+	jmp	L199
+L203:
+	pushl	$1
+	movzbl	36(%ebp), %eax
+	pushl	%eax
+	pushl	_console
+	call	_cons_putchar
+	jmp	L198
+	.balign 2
+.globl _hrb_api_linewin
+	.def	_hrb_api_linewin;	.scl	2;	.type	32;	.endef
+_hrb_api_linewin:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	subl	$12, %esp
+	movl	12(%ebp), %ebx
+	movl	20(%ebp), %eax
+	movl	%ebx, %ecx
+	movl	24(%ebp), %edx
+	sall	$10, %ecx
+	movl	%edx, %edi
+	movl	%ecx, -16(%ebp)
+	movl	%eax, %esi
+	movl	16(%ebp), %ecx
+	subl	16(%ebp), %edi
+	sall	$10, %ecx
+	subl	%ebx, %esi
+	movl	%ecx, -20(%ebp)
+	js	L239
+L218:
+	testl	%edi, %edi
+	js	L240
+L219:
+	cmpl	%edi, %esi
+	jl	L220
+	leal	1(%esi), %ecx
+	cmpl	%eax, %ebx
+	movl	$-1024, %esi
+	jg	L222
+	movl	$1024, %esi
+L222:
+	cmpl	%edx, 16(%ebp)
+	jg	L223
+	subl	16(%ebp), %edx
+	incl	%edx
+L238:
+	sall	$10, %edx
+	movl	%edx, %eax
+	cltd
+	idivl	%ecx
+	movl	%eax, %edi
+L225:
+	testl	%ecx, %ecx
+	jle	L236
+	movl	%ecx, %ebx
+L234:
+	movl	8(%ebp), %edx
+	movl	-20(%ebp), %eax
+	sarl	$10, %eax
+	movl	-16(%ebp), %ecx
+	imull	4(%edx), %eax
+	sarl	$10, %ecx
+	movl	%ecx, -24(%ebp)
+	movl	(%edx), %ecx
+	addl	-24(%ebp), %eax
+	movb	28(%ebp), %dl
+	movb	%dl, (%eax,%ecx)
+	addl	%esi, -16(%ebp)
+	addl	%edi, -20(%ebp)
+	decl	%ebx
+	jne	L234
+L236:
+	addl	$12, %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L223:
+	subl	16(%ebp), %edx
+	decl	%edx
+	jmp	L238
+L220:
+	leal	1(%edi), %ecx
+	cmpl	%edx, 16(%ebp)
+	movl	$-1024, %edi
+	jg	L227
+	movl	$1024, %edi
+L227:
+	cmpl	%eax, %ebx
+	jg	L228
+	subl	%ebx, %eax
+	leal	1(%eax), %edx
+L237:
+	sall	$10, %edx
+	movl	%edx, %eax
+	cltd
+	idivl	%ecx
+	movl	%eax, %esi
+	jmp	L225
+L228:
+	subl	%ebx, %eax
+	leal	-1(%eax), %edx
+	jmp	L237
+L240:
+	negl	%edi
+	jmp	L219
+L239:
+	negl	%esi
+	jmp	L218
+.globl _console
+	.data
+	.balign 4
+_console:
+	.space 4
+	.def	_sheet_free;	.scl	2;	.type	32;	.endef
+	.def	_hrb_api_linewin;	.scl	2;	.type	32;	.endef
+	.def	_memman_alloc;	.scl	2;	.type	32;	.endef
+	.def	_memman_free;	.scl	2;	.type	32;	.endef
+	.def	_memman_init;	.scl	2;	.type	32;	.endef
+	.def	_putfonts8_asc;	.scl	2;	.type	32;	.endef
+	.def	_sheet_updown;	.scl	2;	.type	32;	.endef
+	.def	_sheet_slide;	.scl	2;	.type	32;	.endef
+	.def	_make_window8;	.scl	2;	.type	32;	.endef
+	.def	_sheet_setbuf;	.scl	2;	.type	32;	.endef
+	.def	_sheet_alloc;	.scl	2;	.type	32;	.endef
+	.def	_start_app;	.scl	2;	.type	32;	.endef
+	.def	_set_segmdesc;	.scl	2;	.type	32;	.endef
+	.def	_memman_free_4k;	.scl	2;	.type	32;	.endef
+	.def	_cons_putstr1;	.scl	2;	.type	32;	.endef
+	.def	_file_loadfile;	.scl	2;	.type	32;	.endef
+	.def	_file_search;	.scl	2;	.type	32;	.endef
+	.def	_strncpy;	.scl	2;	.type	32;	.endef
+	.def	_memman_total;	.scl	2;	.type	32;	.endef
+	.def	_sprintf;	.scl	2;	.type	32;	.endef
+	.def	_cons_putstr0;	.scl	2;	.type	32;	.endef
+	.def	_cmd_app;	.scl	2;	.type	32;	.endef
+	.def	_cmd_type;	.scl	2;	.type	32;	.endef
+	.def	_cmd_dir;	.scl	2;	.type	32;	.endef
+	.def	_cmd_cls;	.scl	2;	.type	32;	.endef
+	.def	_cmd_mem;	.scl	2;	.type	32;	.endef
+	.def	_putfonts8_asc_sht;	.scl	2;	.type	32;	.endef
+	.def	_sheet_refresh;	.scl	2;	.type	32;	.endef
+	.def	_cons_runcmd;	.scl	2;	.type	32;	.endef
+	.def	_cons_newline;	.scl	2;	.type	32;	.endef
+	.def	_boxfill8;	.scl	2;	.type	32;	.endef
+	.def	_fifo32_get;	.scl	2;	.type	32;	.endef
+	.def	_io_sti;	.scl	2;	.type	32;	.endef
+	.def	_task_sleep;	.scl	2;	.type	32;	.endef
+	.def	_fifo32_status;	.scl	2;	.type	32;	.endef
+	.def	_io_cli;	.scl	2;	.type	32;	.endef
+	.def	_cons_putchar;	.scl	2;	.type	32;	.endef
+	.def	_file_readfat;	.scl	2;	.type	32;	.endef
+	.def	_timer_settime;	.scl	2;	.type	32;	.endef
+	.def	_timer_init;	.scl	2;	.type	32;	.endef
+	.def	_timer_alloc;	.scl	2;	.type	32;	.endef
+	.def	_fifo32_init;	.scl	2;	.type	32;	.endef
+	.def	_memman_alloc_4k;	.scl	2;	.type	32;	.endef
+	.def	_task_now;	.scl	2;	.type	32;	.endef

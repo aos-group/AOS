@@ -1,0 +1,29 @@
+[format "WCOFF"]			; 制作目标文件的模式
+[instrset "i486p"]
+[bits 32]					; 制作 32 位模式用的机器语言
+
+; 制作目标文件的信息
+[file "api006.nas"]			; 源程序文件名
+
+	global _api_boxfilwin
+
+[section .text]
+
+_api_boxfilwin:				; void api_boxfilwin(int win, int x0, int y0, int x1, int y1, int col);
+	push edi
+	push esi
+	push ebp
+	push ebx
+	mov edx, 7
+	mov ebx, [esp + 20]		; win
+	mov eax, [esp + 24]		; x0
+	mov ecx, [esp + 28]		; y0
+	mov esi, [esp + 32]		; x1
+	mov edi, [esp + 36]		; y1
+	mov ebp, [esp + 40]		; col
+	int 0x40
+	pop ebx
+	pop ebp
+	pop esi
+	pop edi
+	ret
