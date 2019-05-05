@@ -83,6 +83,7 @@ void _HariMain(void) {
 		0,   0,   0,   '_', 0,   0,   0,   0,   0,    0,   0,   0,   0,    '|', 0,    0
 	};
 
+	set_mode_0x13();
 	init_gdtidt();
 	init_pic();
 	io_sti();

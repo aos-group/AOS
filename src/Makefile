@@ -70,7 +70,7 @@ haribote.img : haribote/ipl.bin haribote/haribote.sys \
 # "make" 后启动 QEMU
 run:
 	$(MAKE) haribote.img
-	$(QEMU) -fda haribote.img -m 32
+	$(QEMU) -hda haribote.img -m 32
 
 # "make" 后将磁盘映像安装到软盘中
 install:

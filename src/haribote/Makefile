@@ -1,6 +1,6 @@
 TOOLS			= ../../tools
 ENTRY_POINT 	= 0xc0001500
-FLOPPY_DIR		= path-to-empty-directory
+FLOPPY_DIR		= /tmp/floppy
 
 MAKE 			= make -r
 AS 				= nasm
@@ -29,9 +29,6 @@ default:
 ipl.bin: ipl.s
 	$(AS) -o $@ $< -l ipl.lst
 
-asmhead.bin: asmhead.s
-	$(AS) -o $@ $< -l asmhead.lst
-
 hankaku.bin: hankaku.txt
 	$(MAKEFONT) $^ $@
 
@@ -45,7 +42,7 @@ bootpack.bim: $(OBJS)
 %.hrb: %.bim
 	$(BIM2HRB) $^ $@ 0
 
-haribote.sys: asmhead.bin bootpack.hrb
+haribote.sys: bootpack.hrb
 	cat $^ > $@
 
 # 一般规则
@@ -65,7 +62,6 @@ haribote.sys: asmhead.bin bootpack.hrb
 
 # 命令
 clean:
-	-$(DEL) asmhead.bin
 	-$(DEL) hankaku.bin
 	-$(DEL) *.lst
 	-$(DEL) *.o
