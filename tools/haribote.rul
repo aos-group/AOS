@@ -1,0 +1,18 @@
+format:
+	/* 描述本节中的链接方法 */
+	code(align:1, logic:0x24,      file:0x24);
+	data(align:4, logic:stack_end, file:code_end);
+
+file:
+	/* 在本节中，列出无法在命令行上写入的.obj 和.lib 文件。 */
+	/* 本节可能以完整的方式编写。 */
+	/* 例：  c:/osask/gg00libc.lib;  */
+	../../../tools/harilibc.lib;
+	../../../tools/golibc.lib;
+
+label:
+	/* 指定必须链接的标签 */
+	/* 指定入口点 */
+	_HariStartup;
+
+	/* 上述三节的顺序不应改变！ */

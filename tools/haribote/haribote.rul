@@ -1,0 +1,18 @@
+format:
+	/* 描述本?中的?接策略 */
+	code(align:1, logic:0x24,      file:0x24);
+	data(align:4, logic:stack_end, file:code_end);
+
+file:
+	/* 描述本?中无法在命令行上?写的.obj和.lib文件 */
+	/* 本?可能以完整的方式?写 (??路径) */
+	/* 例：  c:/osask/gg00libc.lib;  */
+	../../../tools/haribote/harilibc.lib;
+	../../../tools/haribote/golibc.lib;
+
+label:
+	/* 指定必??接的?? */
+	/* 指定入口点 */
+	_HariStartup;
+
+	/* 上述三?的?序不?改?！ */

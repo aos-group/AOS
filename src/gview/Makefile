@@ -1,0 +1,93 @@
+APP      = gview
+STACK    = 4480k
+MALLOC   = 0k
+
+
+APILIBPATH   	= ../apilib/
+VPATH			= $(APILIBPATH)
+TOOLS			= ../../tools
+ENTRY_POINT 	= 0xc0001500
+FLOPPY_DIR		= path-to-empty-directory
+
+MAKE 			= make -r
+AS 				= nasm
+COPY 			= cp
+DEL 			= rm
+CC 				= gcc $(CFLAGS)
+QEMU 			= qemu
+BIM2HRB			= $(TOOLS)/bim2hrb
+OBJ2BIM			= $(TOOLS)/obj2bim
+RULEFILE		= $(TOOLS)/haribote.rul
+C2NASM			= $(TOOLS)/c2nasm.sh
+MAKEFONT		= $(TOOLS)/makefont
+BIN2OBJ			= $(TOOLS)/bin2obj
+CHSEC			= $(TOOLS)/chsec.sh
+BIM2BIN			= $(TOOLS)/bim2bin
+
+# 默认行为
+default:
+	$(MAKE) $(APP).hrb 
+
+# 文件生成规则
+$(APP).bim: $(APP).o apilib.lib bmp.obj jpeg.o
+	$(OBJ2BIM) @$(RULEFILE) out:$@ stack:$(STACK) map:$(APP).map $^
+
+$(APP).hrb: $(APP).bim
+	$(BIM2HRB) $^ $@ $(MALLOC)
+
+$(APP).org: $(APP).org
+	$(BIM2BIN) -osacmp in:$^ out:$@
+
+haribote.img: ipl10.bin haribote.sys $(APP).hrb
+	dd if=ipl10.bin of=$@ bs=512 count=1
+	dd if=/dev/zero of=$@ bs=512 seek=1 count=2879
+	mkdir -p $(FLOPPY_DIR)
+	sudo mount -o loop $@ $(FLOPPY_DIR) -o fat=12		#  -o loop: 用来把一个文件当成硬盘分区挂接上系统	-o fat=12: 挂载fat12文件系统
+	#sleep 1
+	sudo $(COPY) haribote.sys $(FLOPPY_DIR)
+	sudo $(COPY) $(APP).hrb $(FLOPPY_DIR)
+	#sleep 1
+	sudo umount $(FLOPPY_DIR)
+
+# 一般规则
+.PRECIOUS: %.nas_tmp %.nas
+
+%.nas_tmp: %.c
+	$(C2NASM) $< $@
+	
+%.nas: %.nas_tmp
+	$(CHSEC) $< $@
+	
+%.o: %.s
+	$(AS) -f coff -o $@ $< -l $*.lst
+
+%.o: %.nas
+	$(AS) -f coff -o $@ $< -l $*.lst
+
+# 命令
+run:
+	$(MAKE) haribote.img
+	$(QEMU) -drive file=haribote.img,if=floppy
+
+full:
+	$(MAKE) -C $(APILIBPATH)
+	$(MAKE) $(APP).hrb
+
+run_full:
+	$(MAKE) -C $(APILIBPATH)
+	$(MAKE) -C $(HARIBOTEPATH)
+	$(MAKE) run
+
+clean:
+	-$(DEL) *.lst
+	-$(DEL) *.o
+	-$(DEL) *.map
+	-$(DEL) *.bim
+	-$(DEL) *.org
+	-$(DEL) *.nas
+	-$(DEL) *.nas_tmp
+	-$(DEL) haribote.img
+
+clean_all:
+	$(MAKE) clean
+	-$(DEL) $(APP).hrb

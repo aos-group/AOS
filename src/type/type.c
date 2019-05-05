@@ -1,0 +1,19 @@
+#include "apilib.h"
+
+void _HariMain(void) {
+	int fh;
+	char c, cmdline[30], *p;
+
+	api_cmdline(cmdline, 30);
+	for (p = cmdline; *p > ' '; p++);
+	for (; *p == ' '; p++);
+	fh = api_fopen(p);
+	if (fh) {
+		while (api_fread(&c, 1, fh)) {
+			api_putchar(c);
+		}
+	} else {
+		api_putstr0("File not found.\n");
+	}
+	api_end();
+}

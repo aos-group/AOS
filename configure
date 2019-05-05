@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+help() {
+	echo "usage: $1 <path-to-empty-directory>"
+	exit 0
+}
+[ -z "$1" ] || [ "$1" == "-h" ] && help $0
+
+CUR_DIR=$(pwd)
+
+sed -i "s|absolute-path-to-tools|$CUR_DIR/tools|g" tools/chsec.sh
+sed -i "s|path-to-empty-directory|$1|g" src/app_make.txt
+sed -i "s|path-to-empty-directory|$1|g" src/Makefile
+sed -i "s|path-to-empty-directory|$1|g" src/haribote/Makefile
